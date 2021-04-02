@@ -38,16 +38,31 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+//        this.getWindow().getDecorView().setSystemUiVisibility(
+//                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+//                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+//                | View.SYSTEM_UI_FLAG_FULLSCREEN
+//        );
+
+        //иниацлизация свайпа
         SwipeRefreshLayout refreshSwipe = findViewById(R.id.swipe);
+        //иниацлизация диалог. окна загрузки
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Loading Data...");
         progressDialog.setCancelable(false);
+        //создание менеджера синхронизации cookies файлов
         CookieSyncManager.createInstance(this);
         CookieSyncManager.getInstance().startSync();
+        //инициализация webView
         WebView web_view = new WebView(this);
+        //включение поддержки JavaScript
         web_view.getSettings().setJavaScriptEnabled(true);
         setContentView(web_view);
+        //загрузка url в webView
         web_view.loadUrl("https://realt.one/");
+        //слушатель изменения url (переход по ссылке)
         web_view.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -55,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        //скрытие и показа диалог. окна загрузки
         web_view.setWebChromeClient(new WebChromeClient() {
             public void onProgressChanged(WebView view, int progress) {
                 if (progress < 100) {
@@ -65,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        //Слушатель обновления по свайпу
         refreshSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -73,6 +92,8 @@ public class MainActivity extends AppCompatActivity {
                 refreshSwipe.setRefreshing(false);
             }
         });
+
+        //слушатель нажатия кнопки назад
         web_view.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
